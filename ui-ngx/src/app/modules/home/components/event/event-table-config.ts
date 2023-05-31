@@ -49,6 +49,12 @@ import {
   EventFilterPanelData,
   FilterEntityColumn
 } from '@home/components/event/event-filter-panel.component';
+import { NodeScriptTestService } from '@core/services/script/node-script-test.service';
+import {
+  ruleNodeClazzTestSelectedEventParamsMap,
+  RuleNodeConfiguration,
+  ScriptLanguage
+} from '@shared/models/rule-node.models';
 
 export class EventTableConfig extends EntityTableConfig<Event, TimePageLink> {
 
@@ -84,7 +90,10 @@ export class EventTableConfig extends EntityTableConfig<Event, TimePageLink> {
               private debugEventTypes: Array<DebugEventType> = null,
               private overlay: Overlay,
               private viewContainerRef: ViewContainerRef,
-              private cd: ChangeDetectorRef) {
+              private cd: ChangeDetectorRef,
+              private nodeScriptTestService: NodeScriptTestService,
+              private ruleNodeConfiguration: RuleNodeConfiguration,
+              private ruleNodeClazz: string) {
     super();
     this.loadDataOnInit = false;
     this.tableTitle = '';
@@ -316,6 +325,30 @@ export class EventTableConfig extends EntityTableConfig<Event, TimePageLink> {
               isEnabled: (entity) => entity.body.error && entity.body.error.length > 0,
               onAction: ($event, entity) => this.showContent($event, entity.body.error,
                 'event.error')
+            },
+            '48px'),
+          new EntityActionTableColumn<Event>('test', '',
+            {
+              name: 'Test generator function with this message',
+              icon: 'bug_report',
+              isEnabled: (entity) => {
+                return entity.body.type === 'IN' && ruleNodeClazzTestSelectedEventParamsMap.hasOwnProperty(this.ruleNodeClazz)
+              },
+              onAction: ($event, entity) => {
+                const scriptLang: ScriptLanguage = this.ruleNodeConfiguration.scriptLang;
+                const scriptField = ruleNodeClazzTestSelectedEventParamsMap[this.ruleNodeClazz].scriptField[scriptLang];
+                const helpId = ruleNodeClazzTestSelectedEventParamsMap[this.ruleNodeClazz].helpId[scriptLang];
+                this.nodeScriptTestService.testNodeScriptWithSelectedEventMessage(this.ruleNodeConfiguration[scriptField],
+                  ruleNodeClazzTestSelectedEventParamsMap[this.ruleNodeClazz].scriptType,
+                  this.translate.instant(ruleNodeClazzTestSelectedEventParamsMap[this.ruleNodeClazz].functionTitle),
+                  ruleNodeClazzTestSelectedEventParamsMap[this.ruleNodeClazz].functionName,
+                  ruleNodeClazzTestSelectedEventParamsMap[this.ruleNodeClazz].argNames,
+                  entity.body.data,
+                  entity.body.metadata,
+                  entity.body.msgType,
+                  helpId,
+                  scriptLang).subscribe();
+              }
             },
             '48px')
         );

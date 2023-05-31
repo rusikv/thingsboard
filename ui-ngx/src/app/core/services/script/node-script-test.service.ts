@@ -67,6 +67,24 @@ export class NodeScriptTestService {
     }
   }
 
+  public testNodeScriptWithSelectedEventMessage(script: string, scriptType: string, functionTitle: string,
+                                                functionName: string, argNames: string[], msg?: any,
+                                                metadata?: any, msgType?: string, helpId?: string,
+                                                scriptLang?: ScriptLanguage) {
+    if (msg) {
+      try {
+        msg = JSON.parse(msg);
+      } catch (e) {}
+    }
+    if (metadata) {
+      try {
+        metadata = JSON.parse(metadata);
+      } catch (e) {}
+    }
+    return this.openTestScriptDialog(script, scriptType, functionTitle,
+      functionName, argNames, msg, metadata, msgType, helpId, scriptLang);
+  }
+
   private openTestScriptDialog(script: string, scriptType: string,
                                functionTitle: string, functionName: string, argNames: string[],
                                msg?: any, metadata?: {[key: string]: string}, msgType?: string, helpId?: string,

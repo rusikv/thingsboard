@@ -35,6 +35,8 @@ import { DialogService } from '@core/services/dialog.service';
 import { DebugEventType, EventType } from '@shared/models/event.models';
 import { Overlay } from '@angular/cdk/overlay';
 import { Subscription } from 'rxjs';
+import { NodeScriptTestService } from '@core/services/script/node-script-test.service';
+import { RuleNodeConfiguration } from '@shared/models/rule-node.models';
 
 @Component({
   selector: 'tb-event-table',
@@ -83,6 +85,12 @@ export class EventTableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  @Input()
+  ruleNodeConfiguration: RuleNodeConfiguration;
+
+  @Input()
+  ruleNodeClazz: string;
+
   @ViewChild(EntitiesTableComponent, {static: true}) entitiesTable: EntitiesTableComponent;
 
   eventTableConfig: EventTableConfig;
@@ -96,7 +104,8 @@ export class EventTableComponent implements OnInit, AfterViewInit, OnDestroy {
               private dialog: MatDialog,
               private overlay: Overlay,
               private viewContainerRef: ViewContainerRef,
-              private cd: ChangeDetectorRef) {
+              private cd: ChangeDetectorRef,
+              private nodeScriptTestService: NodeScriptTestService) {
   }
 
   ngOnInit() {
@@ -114,7 +123,10 @@ export class EventTableComponent implements OnInit, AfterViewInit, OnDestroy {
       this.debugEventTypes,
       this.overlay,
       this.viewContainerRef,
-      this.cd
+      this.cd,
+      this.nodeScriptTestService,
+      this.ruleNodeConfiguration,
+      this.ruleNodeClazz
     );
   }
 

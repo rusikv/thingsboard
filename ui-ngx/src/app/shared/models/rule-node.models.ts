@@ -426,61 +426,219 @@ export const messageTypeNames = new Map<MessageType, string>(
 export const ruleChainNodeClazz = 'org.thingsboard.rule.engine.flow.TbRuleChainInputNode';
 export const outputNodeClazz = 'org.thingsboard.rule.engine.flow.TbRuleChainOutputNode';
 
+enum RuleNodeClazz {
+  TbCheckRelationNode = 'org.thingsboard.rule.engine.filter.TbCheckRelationNode',
+  TbCheckMessageNode = 'org.thingsboard.rule.engine.filter.TbCheckMessageNode',
+  TbGpsGeofencingFilterNode = 'org.thingsboard.rule.engine.geo.TbGpsGeofencingFilterNode',
+  TbJsFilterNode = 'org.thingsboard.rule.engine.filter.TbJsFilterNode',
+  TbJsSwitchNode = 'org.thingsboard.rule.engine.filter.TbJsSwitchNode',
+  TbAssetTypeSwitchNode = 'org.thingsboard.rule.engine.filter.TbAssetTypeSwitchNode',
+  TbDeviceTypeSwitchNode = 'org.thingsboard.rule.engine.filter.TbDeviceTypeSwitchNode',
+  TbCheckAlarmStatusNode = 'org.thingsboard.rule.engine.filter.TbCheckAlarmStatusNode',
+  TbMsgTypeFilterNode = 'org.thingsboard.rule.engine.filter.TbMsgTypeFilterNode',
+  TbMsgTypeSwitchNode = 'org.thingsboard.rule.engine.filter.TbMsgTypeSwitchNode',
+  TbOriginatorTypeFilterNode = 'org.thingsboard.rule.engine.filter.TbOriginatorTypeFilterNode',
+  TbOriginatorTypeSwitchNode = 'org.thingsboard.rule.engine.filter.TbOriginatorTypeSwitchNode',
+  TbGetAttributesNode = 'org.thingsboard.rule.engine.metadata.TbGetAttributesNode',
+  TbGetOriginatorFieldsNode = 'org.thingsboard.rule.engine.metadata.TbGetOriginatorFieldsNode',
+  TbGetTelemetryNode = 'org.thingsboard.rule.engine.metadata.TbGetTelemetryNode',
+  TbGetCustomerAttributeNode = 'org.thingsboard.rule.engine.metadata.TbGetCustomerAttributeNode',
+  TbGetCustomerDetailsNode = 'org.thingsboard.rule.engine.metadata.TbGetCustomerDetailsNode',
+  TbGetDeviceAttrNode = 'org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode',
+  TbGetRelatedAttributeNode = 'org.thingsboard.rule.engine.metadata.TbGetRelatedAttributeNode',
+  TbGetTenantAttributeNode = 'org.thingsboard.rule.engine.metadata.TbGetTenantAttributeNode',
+  TbGetTenantDetailsNode = 'org.thingsboard.rule.engine.metadata.TbGetTenantDetailsNode',
+  CalculateDeltaNode = 'org.thingsboard.rule.engine.metadata.CalculateDeltaNode',
+  TbChangeOriginatorNode = 'org.thingsboard.rule.engine.transform.TbChangeOriginatorNode',
+  TbTransformMsgNode = 'org.thingsboard.rule.engine.transform.TbTransformMsgNode',
+  TbMsgToEmailNode = 'org.thingsboard.rule.engine.mail.TbMsgToEmailNode',
+  TbAssignToCustomerNode = 'org.thingsboard.rule.engine.action.TbAssignToCustomerNode',
+  TbUnassignFromCustomerNode = 'org.thingsboard.rule.engine.action.TbUnassignFromCustomerNode',
+  TbClearAlarmNode = 'org.thingsboard.rule.engine.action.TbClearAlarmNode',
+  TbCreateAlarmNode = 'org.thingsboard.rule.engine.action.TbCreateAlarmNode',
+  TbCreateRelationNode = 'org.thingsboard.rule.engine.action.TbCreateRelationNode',
+  TbDeleteRelationNode = 'org.thingsboard.rule.engine.action.TbDeleteRelationNode',
+  TbMsgDelayNode = 'org.thingsboard.rule.engine.delay.TbMsgDelayNode',
+  TbMsgGeneratorNode = 'org.thingsboard.rule.engine.debug.TbMsgGeneratorNode',
+  TbGpsGeofencingActionNode = 'org.thingsboard.rule.engine.geo.TbGpsGeofencingActionNode',
+  TbLogNode = 'org.thingsboard.rule.engine.action.TbLogNode',
+  TbSendRPCReplyNode = 'org.thingsboard.rule.engine.rpc.TbSendRPCReplyNode',
+  TbSendRPCRequestNode = 'org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode',
+  TbMsgAttributesNode = 'org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode',
+  TbMsgTimeseriesNode = 'org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode',
+  TbSaveToCustomCassandraTableNode = 'org.thingsboard.rule.engine.action.TbSaveToCustomCassandraTableNode',
+  TbSnsNode = 'org.thingsboard.rule.engine.aws.sns.TbSnsNode',
+  TbSqsNode = 'org.thingsboard.rule.engine.aws.sqs.TbSqsNode',
+  TbKafkaNode = 'org.thingsboard.rule.engine.kafka.TbKafkaNode',
+  TbMqttNode = 'org.thingsboard.rule.engine.mqtt.TbMqttNode',
+  TbAzureIotHubNode = 'org.thingsboard.rule.engine.mqtt.azure.TbAzureIotHubNode',
+  TbRabbitMqNode = 'org.thingsboard.rule.engine.rabbitmq.TbRabbitMqNode',
+  TbRestApiCallNode = 'org.thingsboard.rule.engine.rest.TbRestApiCallNode',
+  TbSendEmailNode = 'org.thingsboard.rule.engine.mail.TbSendEmailNode',
+  TbSendSmsNode = 'org.thingsboard.rule.engine.sms.TbSendSmsNode',
+  TbMsgPushToCloudNode = 'org.thingsboard.rule.engine.edge.TbMsgPushToCloudNode',
+  TbMsgPushToEdgeNode = 'org.thingsboard.rule.engine.edge.TbMsgPushToEdgeNode',
+  TbRuleChainInputNode = 'org.thingsboard.rule.engine.flow.TbRuleChainInputNode',
+  TbRuleChainOutputNode = 'org.thingsboard.rule.engine.flow.TbRuleChainOutputNode',
+  TbMathNode = 'org.thingsboard.rule.engine.math.TbMathNode'
+}
+
+export const ruleNodeClazzTestSelectedEventParamsMap = {
+  [RuleNodeClazz.TbTransformMsgNode]: {
+    scriptType: 'update',
+    scriptField: {
+      [ScriptLanguage.JS]: 'jsScript',
+      [ScriptLanguage.TBEL]: 'tbelScript'
+    },
+    functionTitle: 'rulenode.transformer',
+    functionName: 'Transform',
+    argNames: ['msg', 'metadata', 'msgType'],
+    helpId: {
+      [ScriptLanguage.JS]: 'rulenode/transformation_node_script_fn',
+      [ScriptLanguage.TBEL]: 'rulenode/tbel/transformation_node_script_fn'
+    }
+  },
+  [RuleNodeClazz.TbMsgGeneratorNode]: {
+    scriptType: 'generate',
+    scriptField: {
+      [ScriptLanguage.JS]: 'jsScript',
+      [ScriptLanguage.TBEL]: 'tbelScript'
+    },
+    functionTitle: 'rulenode.generator',
+    functionName: 'Generate',
+    argNames: ['prevMsg', 'prevMetadata', 'prevMsgType'],
+    helpId: {
+      [ScriptLanguage.JS]: 'rulenode/generator_node_script_fn',
+      [ScriptLanguage.TBEL]: 'rulenode/tbel/generator_node_script_fn'
+    }
+  },
+  [RuleNodeClazz.TbClearAlarmNode]: {
+    scriptType: 'json',
+    scriptField: {
+      [ScriptLanguage.JS]: 'alarmDetailsBuildJs',
+      [ScriptLanguage.TBEL]: 'alarmDetailsBuildTbel'
+    },
+    functionTitle: 'rulenode.details',
+    functionName: 'Details',
+    argNames: ['msg', 'metadata', 'msgType'],
+    helpId: {
+      [ScriptLanguage.JS]: 'rulenode/clear_alarm_node_script_fn',
+      [ScriptLanguage.TBEL]: 'rulenode/tbel/clear_alarm_node_script_fn'
+    }
+  },
+  [RuleNodeClazz.TbCreateAlarmNode]: {
+    scriptType: 'json',
+    scriptField: {
+      [ScriptLanguage.JS]: 'alarmDetailsBuildJs',
+      [ScriptLanguage.TBEL]: 'alarmDetailsBuildTbel'
+    },
+    functionTitle: 'rulenode.details',
+    functionName: 'Details',
+    argNames: ['msg', 'metadata', 'msgType'],
+    helpId: {
+      [ScriptLanguage.JS]: 'rulenode/create_alarm_node_script_fn',
+      [ScriptLanguage.TBEL]: 'rulenode/tbel/create_alarm_node_script_fn'
+    }
+  },
+  [RuleNodeClazz.TbLogNode]: {
+    scriptType: 'string',
+    scriptField: {
+      [ScriptLanguage.JS]: 'jsScript',
+      [ScriptLanguage.TBEL]: 'tbelScript'
+    },
+    functionTitle: 'rulenode.to-string',
+    functionName: 'ToString',
+    argNames: ['msg', 'metadata', 'msgType'],
+    helpId: {
+      [ScriptLanguage.JS]: 'rulenode/log_node_script_fn',
+      [ScriptLanguage.TBEL]: 'rulenode/tbel/log_node_script_fn'
+    }
+  },
+  [RuleNodeClazz.TbJsSwitchNode]: {
+    scriptType: 'switch',
+    scriptField: {
+      [ScriptLanguage.JS]: 'jsScript',
+      [ScriptLanguage.TBEL]: 'tbelScript'
+    },
+    functionTitle: 'rulenode.switch',
+    functionName: 'Switch',
+    argNames: ['msg', 'metadata', 'msgType'],
+    helpId: {
+      [ScriptLanguage.JS]: 'rulenode/switch_node_script_fn',
+      [ScriptLanguage.TBEL]: 'rulenode/tbel/switch_node_script_fn'
+    }
+  },
+  [RuleNodeClazz.TbJsFilterNode]: {
+    scriptType: 'filter',
+    scriptField: {
+      [ScriptLanguage.JS]: 'jsScript',
+      [ScriptLanguage.TBEL]: 'tbelScript'
+    },
+    functionTitle: 'rulenode.filter',
+    functionName: 'Filter',
+    argNames: ['msg', 'metadata', 'msgType'],
+    helpId: {
+      [ScriptLanguage.JS]: 'rulenode/filter_node_script_fn',
+      [ScriptLanguage.TBEL]: 'rulenode/tbel/filter_node_script_fn'
+    }
+  }
+}
+
 const ruleNodeClazzHelpLinkMap = {
-  'org.thingsboard.rule.engine.filter.TbCheckRelationNode': 'ruleNodeCheckRelation',
-  'org.thingsboard.rule.engine.filter.TbCheckMessageNode': 'ruleNodeCheckExistenceFields',
-  'org.thingsboard.rule.engine.geo.TbGpsGeofencingFilterNode': 'ruleNodeGpsGeofencingFilter',
-  'org.thingsboard.rule.engine.filter.TbJsFilterNode': 'ruleNodeJsFilter',
-  'org.thingsboard.rule.engine.filter.TbJsSwitchNode': 'ruleNodeJsSwitch',
-  'org.thingsboard.rule.engine.filter.TbAssetTypeSwitchNode': 'ruleNodeAssetProfileSwitch',
-  'org.thingsboard.rule.engine.filter.TbDeviceTypeSwitchNode': 'ruleNodeDeviceProfileSwitch',
-  'org.thingsboard.rule.engine.filter.TbCheckAlarmStatusNode': 'ruleNodeCheckAlarmStatus',
-  'org.thingsboard.rule.engine.filter.TbMsgTypeFilterNode': 'ruleNodeMessageTypeFilter',
-  'org.thingsboard.rule.engine.filter.TbMsgTypeSwitchNode': 'ruleNodeMessageTypeSwitch',
-  'org.thingsboard.rule.engine.filter.TbOriginatorTypeFilterNode': 'ruleNodeOriginatorTypeFilter',
-  'org.thingsboard.rule.engine.filter.TbOriginatorTypeSwitchNode': 'ruleNodeOriginatorTypeSwitch',
-  'org.thingsboard.rule.engine.metadata.TbGetAttributesNode': 'ruleNodeOriginatorAttributes',
-  'org.thingsboard.rule.engine.metadata.TbGetOriginatorFieldsNode': 'ruleNodeOriginatorFields',
-  'org.thingsboard.rule.engine.metadata.TbGetTelemetryNode': 'ruleNodeOriginatorTelemetry',
-  'org.thingsboard.rule.engine.metadata.TbGetCustomerAttributeNode': 'ruleNodeCustomerAttributes',
-  'org.thingsboard.rule.engine.metadata.TbGetCustomerDetailsNode': 'ruleNodeCustomerDetails',
-  'org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode': 'ruleNodeDeviceAttributes',
-  'org.thingsboard.rule.engine.metadata.TbGetRelatedAttributeNode': 'ruleNodeRelatedAttributes',
-  'org.thingsboard.rule.engine.metadata.TbGetTenantAttributeNode': 'ruleNodeTenantAttributes',
-  'org.thingsboard.rule.engine.metadata.TbGetTenantDetailsNode': 'ruleNodeTenantDetails',
-  'org.thingsboard.rule.engine.metadata.CalculateDeltaNode': 'ruleNodeCalculateDelta',
-  'org.thingsboard.rule.engine.transform.TbChangeOriginatorNode': 'ruleNodeChangeOriginator',
-  'org.thingsboard.rule.engine.transform.TbTransformMsgNode': 'ruleNodeTransformMsg',
-  'org.thingsboard.rule.engine.mail.TbMsgToEmailNode': 'ruleNodeMsgToEmail',
-  'org.thingsboard.rule.engine.action.TbAssignToCustomerNode': 'ruleNodeAssignToCustomer',
-  'org.thingsboard.rule.engine.action.TbUnassignFromCustomerNode': 'ruleNodeUnassignFromCustomer',
-  'org.thingsboard.rule.engine.action.TbClearAlarmNode': 'ruleNodeClearAlarm',
-  'org.thingsboard.rule.engine.action.TbCreateAlarmNode': 'ruleNodeCreateAlarm',
-  'org.thingsboard.rule.engine.action.TbCreateRelationNode': 'ruleNodeCreateRelation',
-  'org.thingsboard.rule.engine.action.TbDeleteRelationNode': 'ruleNodeDeleteRelation',
-  'org.thingsboard.rule.engine.delay.TbMsgDelayNode': 'ruleNodeMsgDelay',
-  'org.thingsboard.rule.engine.debug.TbMsgGeneratorNode': 'ruleNodeMsgGenerator',
-  'org.thingsboard.rule.engine.geo.TbGpsGeofencingActionNode': 'ruleNodeGpsGeofencingEvents',
-  'org.thingsboard.rule.engine.action.TbLogNode': 'ruleNodeLog',
-  'org.thingsboard.rule.engine.rpc.TbSendRPCReplyNode': 'ruleNodeRpcCallReply',
-  'org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode': 'ruleNodeRpcCallRequest',
-  'org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode': 'ruleNodeSaveAttributes',
-  'org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode': 'ruleNodeSaveTimeseries',
-  'org.thingsboard.rule.engine.action.TbSaveToCustomCassandraTableNode': 'ruleNodeSaveToCustomTable',
-  'org.thingsboard.rule.engine.aws.sns.TbSnsNode': 'ruleNodeAwsSns',
-  'org.thingsboard.rule.engine.aws.sqs.TbSqsNode': 'ruleNodeAwsSqs',
-  'org.thingsboard.rule.engine.kafka.TbKafkaNode': 'ruleNodeKafka',
-  'org.thingsboard.rule.engine.mqtt.TbMqttNode': 'ruleNodeMqtt',
-  'org.thingsboard.rule.engine.mqtt.azure.TbAzureIotHubNode': 'ruleNodeAzureIotHub',
-  'org.thingsboard.rule.engine.rabbitmq.TbRabbitMqNode': 'ruleNodeRabbitMq',
-  'org.thingsboard.rule.engine.rest.TbRestApiCallNode': 'ruleNodeRestApiCall',
-  'org.thingsboard.rule.engine.mail.TbSendEmailNode': 'ruleNodeSendEmail',
-  'org.thingsboard.rule.engine.sms.TbSendSmsNode': 'ruleNodeSendSms',
-  'org.thingsboard.rule.engine.edge.TbMsgPushToCloudNode': 'ruleNodePushToCloud',
-  'org.thingsboard.rule.engine.edge.TbMsgPushToEdgeNode': 'ruleNodePushToEdge',
-  'org.thingsboard.rule.engine.flow.TbRuleChainInputNode': 'ruleNodeRuleChain',
-  'org.thingsboard.rule.engine.flow.TbRuleChainOutputNode': 'ruleNodeOutputNode',
-  'org.thingsboard.rule.engine.math.TbMathNode': 'ruleNodeMath',
+  [RuleNodeClazz.TbCheckRelationNode]: 'ruleNodeCheckRelation',
+  [RuleNodeClazz.TbCheckMessageNode]: 'ruleNodeCheckExistenceFields',
+  [RuleNodeClazz.TbGpsGeofencingFilterNode]: 'ruleNodeGpsGeofencingFilter',
+  [RuleNodeClazz.TbJsFilterNode]: 'ruleNodeJsFilter',
+  [RuleNodeClazz.TbJsSwitchNode]: 'ruleNodeJsSwitch',
+  [RuleNodeClazz.TbAssetTypeSwitchNode]: 'ruleNodeAssetProfileSwitch',
+  [RuleNodeClazz.TbDeviceTypeSwitchNode]: 'ruleNodeDeviceProfileSwitch',
+  [RuleNodeClazz.TbCheckAlarmStatusNode]: 'ruleNodeCheckAlarmStatus',
+  [RuleNodeClazz.TbMsgTypeFilterNode]: 'ruleNodeMessageTypeFilter',
+  [RuleNodeClazz.TbMsgTypeSwitchNode]: 'ruleNodeMessageTypeSwitch',
+  [RuleNodeClazz.TbOriginatorTypeFilterNode]: 'ruleNodeOriginatorTypeFilter',
+  [RuleNodeClazz.TbOriginatorTypeSwitchNode]: 'ruleNodeOriginatorTypeSwitch',
+  [RuleNodeClazz.TbGetAttributesNode]: 'ruleNodeOriginatorAttributes',
+  [RuleNodeClazz.TbGetOriginatorFieldsNode]: 'ruleNodeOriginatorFields',
+  [RuleNodeClazz.TbGetTelemetryNode]: 'ruleNodeOriginatorTelemetry',
+  [RuleNodeClazz.TbGetCustomerAttributeNode]: 'ruleNodeCustomerAttributes',
+  [RuleNodeClazz.TbGetCustomerDetailsNode]: 'ruleNodeCustomerDetails',
+  [RuleNodeClazz.TbGetDeviceAttrNode]: 'ruleNodeDeviceAttributes',
+  [RuleNodeClazz.TbGetRelatedAttributeNode]: 'ruleNodeRelatedAttributes',
+  [RuleNodeClazz.TbGetTenantAttributeNode]: 'ruleNodeTenantAttributes',
+  [RuleNodeClazz.TbGetTenantDetailsNode]: 'ruleNodeTenantDetails',
+  [RuleNodeClazz.CalculateDeltaNode]: 'ruleNodeCalculateDelta',
+  [RuleNodeClazz.TbChangeOriginatorNode]: 'ruleNodeChangeOriginator',
+  [RuleNodeClazz.TbTransformMsgNode]: 'ruleNodeTransformMsg',
+  [RuleNodeClazz.TbMsgToEmailNode]: 'ruleNodeMsgToEmail',
+  [RuleNodeClazz.TbAssignToCustomerNode]: 'ruleNodeAssignToCustomer',
+  [RuleNodeClazz.TbUnassignFromCustomerNode]: 'ruleNodeUnassignFromCustomer',
+  [RuleNodeClazz.TbClearAlarmNode]: 'ruleNodeClearAlarm',
+  [RuleNodeClazz.TbCreateAlarmNode]: 'ruleNodeCreateAlarm',
+  [RuleNodeClazz.TbCreateRelationNode]: 'ruleNodeCreateRelation',
+  [RuleNodeClazz.TbDeleteRelationNode]: 'ruleNodeDeleteRelation',
+  [RuleNodeClazz.TbMsgDelayNode]: 'ruleNodeMsgDelay',
+  [RuleNodeClazz.TbMsgGeneratorNode]: 'ruleNodeMsgGenerator',
+  [RuleNodeClazz.TbGpsGeofencingActionNode]: 'ruleNodeGpsGeofencingEvents',
+  [RuleNodeClazz.TbLogNode]: 'ruleNodeLog',
+  [RuleNodeClazz.TbSendRPCReplyNode]: 'ruleNodeRpcCallReply',
+  [RuleNodeClazz.TbSendRPCRequestNode]: 'ruleNodeRpcCallRequest',
+  [RuleNodeClazz.TbMsgAttributesNode]: 'ruleNodeSaveAttributes',
+  [RuleNodeClazz.TbMsgTimeseriesNode]: 'ruleNodeSaveTimeseries',
+  [RuleNodeClazz.TbSaveToCustomCassandraTableNode]: 'ruleNodeSaveToCustomTable',
+  [RuleNodeClazz.TbSnsNode]: 'ruleNodeAwsSns',
+  [RuleNodeClazz.TbSqsNode]: 'ruleNodeAwsSqs',
+  [RuleNodeClazz.TbKafkaNode]: 'ruleNodeKafka',
+  [RuleNodeClazz.TbMqttNode]: 'ruleNodeMqtt',
+  [RuleNodeClazz.TbAzureIotHubNode]: 'ruleNodeAzureIotHub',
+  [RuleNodeClazz.TbRabbitMqNode]: 'ruleNodeRabbitMq',
+  [RuleNodeClazz.TbRestApiCallNode]: 'ruleNodeRestApiCall',
+  [RuleNodeClazz.TbSendEmailNode]: 'ruleNodeSendEmail',
+  [RuleNodeClazz.TbSendSmsNode]: 'ruleNodeSendSms',
+  [RuleNodeClazz.TbMsgPushToCloudNode]: 'ruleNodePushToCloud',
+  [RuleNodeClazz.TbMsgPushToEdgeNode]: 'ruleNodePushToEdge',
+  [RuleNodeClazz.TbRuleChainInputNode]: 'ruleNodeRuleChain',
+  [RuleNodeClazz.TbRuleChainOutputNode]: 'ruleNodeOutputNode',
+  [RuleNodeClazz.TbMathNode]: 'ruleNodeMath',
 };
 
 export function getRuleNodeHelpLink(component: RuleNodeComponentDescriptor): string {

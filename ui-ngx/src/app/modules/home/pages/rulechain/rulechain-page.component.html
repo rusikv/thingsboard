@@ -126,7 +126,10 @@
                                 [defaultEventType]="debugEventTypes.DEBUG_RULE_NODE"
                                 [active]="eventsTab.isActive"
                                 [tenantId]="ruleChain.tenantId.id"
-                                [entityId]="editingRuleNode.ruleNodeId"></tb-event-table>
+                                [entityId]="editingRuleNode.ruleNodeId"
+                                [ruleNodeConfiguration]="editingRuleNode.configuration"
+                                [ruleNodeClazz]="editingRuleNode.component.clazz">
+                </tb-event-table>
               </mat-tab>
               <mat-tab label="{{ 'rulenode.help' | translate }}">
                 <div class="tb-rule-node-help">
