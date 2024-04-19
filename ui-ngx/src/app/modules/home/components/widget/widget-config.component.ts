@@ -30,6 +30,7 @@ import { PageComponent } from '@shared/components/page.component';
 import { Store } from '@ngrx/store';
 import { AppState } from '@core/core.state';
 import {
+  CellClickColumnInfo,
   DataKey,
   datasourcesHasAggregation,
   datasourcesHasOnlyComparisonAggregation,
@@ -161,7 +162,9 @@ export class WidgetConfigComponent extends PageComponent implements OnInit, OnDe
     generateDataKey: this.generateDataKey.bind(this),
     fetchEntityKeysForDevice: this.fetchEntityKeysForDevice.bind(this),
     fetchEntityKeys: this.fetchEntityKeys.bind(this),
-    fetchDashboardStates: this.fetchDashboardStates.bind(this)
+    fetchDashboardStates: this.fetchDashboardStates.bind(this),
+    fetchConfiguredColumns: this.fetchConfiguredColumns.bind(this),
+    updateCellClickActions: this.updateCellClickActions.bind(this)
   };
 
   widgetEditMode = this.utils.widgetEditMode;
@@ -669,6 +672,7 @@ export class WidgetConfigComponent extends PageComponent implements OnInit, OnDe
     if (this.modelValue) {
       if (this.modelValue.config) {
         this.modelValue.config.settings = this.advancedSettings.get('settings').value?.model;
+        this.updateCellClickActions();
       }
       this.propagateChange(this.modelValue);
     }
@@ -867,6 +871,120 @@ export class WidgetConfigComponent extends PageComponent implements OnInit, OnDe
       return result;
     } else {
       return [query];
+    }
+  }
+
+  private fetchConfiguredColumns(): Array<CellClickColumnInfo> {
+    if (this.modelValue) {
+      const configuredColumns = new Array<CellClickColumnInfo>();
+      if (this.modelValue.settingsDirective === 'tb-entities-table-widget-settings') {
+        this.entitiesTableDefaultColumnsToCellClickColumns(configuredColumns);
+      }
+      if (this.modelValue.config?.datasources[0]?.dataKeys?.length) {
+        configuredColumns.push(...this.keysToCellClickColumns(this.modelValue.config.datasources[0].dataKeys));
+      }
+      if (this.modelValue.config?.alarmSource?.dataKeys?.length) {
+        configuredColumns.push(...this.keysToCellClickColumns(this.modelValue.config.alarmSource.dataKeys));
+      }
+      return configuredColumns;
+    }
+  }
+
+  private keysToCellClickColumns(dataKeys: Array<DataKey>): Array<CellClickColumnInfo> {
+    const result: Array<CellClickColumnInfo> = [];
+    for (const dataKey of dataKeys) {
+      result.push({
+        name: dataKey.name,
+        label: dataKey?.label,
+        _hash: dataKey?._hash
+      });
+    }
+    return result;
+  }
+
+  private entitiesTableDefaultColumnsToCellClickColumns(columns: Array<CellClickColumnInfo>) {
+    const configSettings = this.modelValue.config?.settings;
+    if (configSettings) {
+      const displayEntityName = isDefined(configSettings.displayEntityName) ? configSettings.displayEntityName : false;
+      const displayEntityLabel = isDefined(configSettings.displayEntityLabel) ? configSettings.displayEntityLabel : false;
+      const displayEntityType = isDefined(configSettings.displayEntityType) ? configSettings.displayEntityType : false;
+      let entityNameColumnTitle: string;
+      let entityLabelColumnTitle: string;
+      if (configSettings.entityNameColumnTitle && configSettings.entityNameColumnTitle.length) {
+        entityNameColumnTitle = this.utils.customTranslation(configSettings.entityNameColumnTitle, configSettings.entityNameColumnTitle);
+      } else {
+        entityNameColumnTitle = this.translate.instant('entity.entity-name');
+      }
+      if (configSettings.entityLabelColumnTitle && configSettings.entityLabelColumnTitle.length) {
+        entityLabelColumnTitle = this.utils.customTranslation(configSettings.entityLabelColumnTitle, configSettings.entityLabelColumnTitle);
+      } else {
+        entityLabelColumnTitle = this.translate.instant('entity.entity-label');
+      }
+      if (displayEntityName) {
+        columns.push({
+          name: 'entityName',
+          label: entityNameColumnTitle
+        });
+      }
+      if (displayEntityLabel) {
+        columns.push({
+          name: 'entityLabel',
+          label: entityLabelColumnTitle
+        });
+      }
+      if (displayEntityType) {
+        columns.push({
+          name: 'entityType',
+          label: this.translate.instant('entity.entity-type')
+        });
+      }
+    }
+  }
+
+  private updateCellClickActions() {
+    const cellClickActions = this.modelValue?.config?.actions['cellClick'];
+    if (cellClickActions?.length) {
+      let columnIndex = 0;
+      if (this.modelValue.settingsDirective === 'tb-entities-table-widget-settings') {
+        const configSettings = this.modelValue.config.settings;
+        const displayEntityName = isDefined(configSettings.displayEntityName) ? configSettings.displayEntityName : false;
+        const displayEntityLabel = isDefined(configSettings.displayEntityLabel) ? configSettings.displayEntityLabel : false;
+        const displayEntityType = isDefined(configSettings.displayEntityType) ? configSettings.displayEntityType : false;
+        if (displayEntityName) {
+          columnIndex++;
+        }
+        if (displayEntityLabel) {
+          const entityLabelAction = cellClickActions.find(action => !action.columnInfo._hash && action.columnInfo.name === 'entityLabel');
+          if (entityLabelAction) {
+            entityLabelAction.columnIndex = columnIndex;
+          }
+          columnIndex++;
+        }
+        if (displayEntityType) {
+          const entityTypeAction = cellClickActions.find(action => !action.columnInfo._hash && action.columnInfo.name === 'entityType');
+          if (entityTypeAction) {
+            entityTypeAction.columnIndex = columnIndex;
+          }
+          columnIndex++;
+        }
+      }
+      if (this.modelValue.config?.datasources[0]?.dataKeys?.length) {
+        for (let [index, dataKey] of this.modelValue.config?.datasources[0]?.dataKeys?.entries()) {
+          const actionToUpdate = cellClickActions.find(action => action.columnInfo._hash === dataKey._hash);
+          if (actionToUpdate) {
+            actionToUpdate.columnIndex = index + columnIndex;
+          }
+        }
+      }
+      if (this.modelValue.config?.alarmSource?.dataKeys?.length) {
+        for (let [index, dataKey] of this.modelValue.config.alarmSource.dataKeys.entries()) {
+          const actionToUpdate = cellClickActions.find(action => action.columnInfo._hash === dataKey._hash);
+          if (actionToUpdate) {
+            actionToUpdate.columnIndex = index + columnIndex;
+          }
+        }
+      }
+      this.actionsSettings.get('actions').patchValue(this.modelValue.config.actions, {emitEvent: false});
     }
   }
 

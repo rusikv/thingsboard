@@ -52,7 +52,7 @@ import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { DataKeyType } from '@shared/models/telemetry/telemetry.models';
 import { DataKey, DatasourceType, JsonSettingsSchema, Widget, widgetType } from '@shared/models/widget.models';
 import { IAliasController } from '@core/api/widget-api.models';
-import { DataKeysCallbacks, DataKeySettingsFunction } from './data-keys.component.models';
+import { DataKeySettingsFunction } from './data-keys.component.models';
 import { alarmFields } from '@shared/models/alarm.models';
 import { UtilsService } from '@core/services/utils.service';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -71,6 +71,7 @@ import { coerceBoolean } from '@shared/decorators/coercion';
 import { DatasourceComponent } from '@home/components/widget/config/datasource.component';
 import { ColorPickerPanelComponent } from '@shared/components/color-picker/color-picker-panel.component';
 import { TbPopoverService } from '@shared/components/popover.service';
+import { WidgetConfigCallbacks } from '@home/components/widget/config/widget-config.component.models';
 
 @Component({
   selector: 'tb-data-keys',
@@ -166,7 +167,7 @@ export class DataKeysComponent implements ControlValueAccessor, OnInit, OnChange
   widget: Widget;
 
   @Input()
-  callbacks: DataKeysCallbacks;
+  callbacks: WidgetConfigCallbacks;
 
   @Input()
   entityAliasId: string;
@@ -495,6 +496,7 @@ export class DataKeysComponent implements ControlValueAccessor, OnInit, OnChange
       }
       this.propagateChange(this.modelValue);
       this.clear();
+      this.callbacks.updateCellClickActions();
     }
   }
 
@@ -519,6 +521,7 @@ export class DataKeysComponent implements ControlValueAccessor, OnInit, OnChange
     this.keysListFormGroup.get('keys').setValue(this.keys);
     this.dragIndex = -1;
     this.propagateChange(this.modelValue);
+    this.callbacks.updateCellClickActions();
   }
 
   openColorPickerPopup(key: DataKey, $event: Event, keyColorButton: HTMLDivElement) {

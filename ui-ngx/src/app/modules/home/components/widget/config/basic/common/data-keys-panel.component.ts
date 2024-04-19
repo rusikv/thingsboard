@@ -45,6 +45,7 @@ import { UtilsService } from '@core/services/utils.service';
 import { DataKeysCallbacks, DataKeySettingsFunction } from '@home/components/widget/config/data-keys.component.models';
 import { coerceBoolean } from '@shared/decorators/coercion';
 import { TimeSeriesChartYAxisId } from '@home/components/widget/lib/chart/time-series-chart.models';
+import { WidgetConfigCallbacks } from '@home/components/widget/config/widget-config.component.models';
 
 @Component({
   selector: 'tb-data-keys-panel',
@@ -145,7 +146,7 @@ export class DataKeysPanelComponent implements ControlValueAccessor, OnInit, OnC
     return this.widgetConfigComponent.widgetType;
   }
 
-  get callbacks(): DataKeysCallbacks {
+  get callbacks(): WidgetConfigCallbacks {
     return this.widgetConfigComponent.widgetConfigCallbacks;
   }
 
@@ -261,6 +262,7 @@ export class DataKeysPanelComponent implements ControlValueAccessor, OnInit, OnC
     const key = keysArray.at(event.previousIndex);
     keysArray.removeAt(event.previousIndex);
     keysArray.insert(event.currentIndex, key);
+    this.callbacks.updateCellClickActions();
   }
 
   keysFormArray(): UntypedFormArray {
@@ -273,6 +275,7 @@ export class DataKeysPanelComponent implements ControlValueAccessor, OnInit, OnC
 
   removeKey(index: number) {
     (this.keysListFormGroup.get('keys') as UntypedFormArray).removeAt(index);
+    this.callbacks.updateCellClickActions();
   }
 
   addKey() {

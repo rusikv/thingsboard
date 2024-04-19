@@ -15,6 +15,7 @@
 ///
 
 import {
+  CellClickColumnInfo,
   WidgetActionDescriptor,
   WidgetActionSource,
   widgetActionTypeTranslationMap
@@ -30,6 +31,8 @@ import { deepClone } from '@core/utils';
 
 export interface WidgetActionCallbacks {
   fetchDashboardStates: (query: string) => Array<string>;
+  fetchConfiguredColumns: () => Array<CellClickColumnInfo>;
+  updateCellClickActions: () => void;
 }
 
 export interface WidgetActionsData {

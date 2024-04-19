@@ -82,7 +82,9 @@
             {{ column.title }}
           </mat-header-cell>
           <mat-cell *matCellDef="let alarm; let row = index"
-                    [ngStyle]="cellStyle(alarm, column, row)">
+                    [ngStyle]="cellStyle(alarm, column, row)"
+                    (click)="onCellClick($event, alarm, column)"
+                    [class.tb-pointer]="columnHasCellClick(column._hash)">
             <span [innerHTML]="cellContent(alarm, column, row)"></span>
             <ng-container *ngIf="column.entityKey.key === 'assignee'">
               <span class="assignee-cell" fxLayout="row" fxLayoutAlign="start center">

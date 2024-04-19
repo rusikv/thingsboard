@@ -359,6 +359,8 @@ export interface DataKey extends KeyInfo {
   _hash?: number;
 }
 
+export type CellClickColumnInfo = Pick<DataKey, 'name' | 'label' | '_hash'>
+
 export enum DataKeyConfigMode {
   general = 'general',
   advanced = 'advanced'
@@ -686,6 +688,8 @@ export interface WidgetActionDescriptor extends WidgetAction {
   displayName?: string;
   useShowWidgetActionFunction?: boolean;
   showWidgetActionFunction?: string;
+  columnIndex?: number;
+  columnInfo?: CellClickColumnInfo;
 }
 
 export const actionDescriptorToAction = (descriptor: WidgetActionDescriptor): WidgetAction => {
@@ -696,6 +700,8 @@ export const actionDescriptorToAction = (descriptor: WidgetActionDescriptor): Wi
   delete result.displayName;
   delete result.useShowWidgetActionFunction;
   delete result.showWidgetActionFunction;
+  delete result.columnIndex;
+  delete result.columnInfo;
   return result;
 };
 
