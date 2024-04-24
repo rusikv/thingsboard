@@ -245,6 +245,14 @@ export class MenuService {
             path: '/settings/queues',
             icon: 'swap_calls'
           },
+          {
+            id: 'mobile_app_settings',
+            name: 'admin.mobile-app.mobile-app',
+            fullName: 'admin.mobile-app.mobile-app',
+            type: 'link',
+            path: '/settings/mobile-app',
+            icon: 'smartphone'
+          }
         ]
       },
       {
@@ -644,6 +652,14 @@ export class MenuService {
             type: 'link',
             path: '/settings/auto-commit',
             icon: 'settings_backup_restore'
+          },
+          {
+            id: 'mobile_app_settings',
+            name: 'admin.mobile-app.mobile-app',
+            fullName: 'admin.mobile-app.mobile-app',
+            type: 'link',
+            path: '/settings/mobile-app',
+            icon: 'smartphone'
           }
         ]
       },
@@ -909,6 +925,14 @@ export class MenuService {
             icon: 'inbox'
           }
         ]
+      },
+      {
+        id: 'mobile_app_settings',
+        name: 'admin.mobile-app.mobile-app',
+        fullName: 'admin.mobile-app.mobile-app',
+        type: 'link',
+        path: '/settings/mobile-app',
+        icon: 'smartphone'
       }
     );
     return sections;
