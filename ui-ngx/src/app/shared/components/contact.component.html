@@ -30,6 +30,7 @@
     </mat-form-field>
     <mat-form-field class="mat-block">
       <mat-label translate>contact.state</mat-label>
+      <mat-label translate>contact.state</mat-label>
       <input matInput formControlName="state">
       <mat-error *ngIf="parentForm.get('state').hasError('maxlength')">
         {{ 'contact.state-max-length' | translate }}
